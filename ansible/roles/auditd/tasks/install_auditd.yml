@@ -1,0 +1,5 @@
+---
+- name: Install Auditd
+  ansible.builtin.dnf:
+    name: audit
+    state: present

@@ -1,0 +1,32 @@
+---
+- name: Deploy auditd configuration file
+  template:
+    src: auditd.conf.j2
+    dest: /etc/audit/auditd.conf
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: Ensure /etc/audit/rules.d directory exists
+  file:
+    path: /etc/audit/rules.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0750'
+
+- name: Set audit rules (example rule)
+  copy:
+    dest: /etc/audit/rules.d/audit.rules
+    content: |
+      # Example rule to log all modifications to /etc/passwd
+      -w /etc/passwd -p wa -k passwd_modification
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: Reload auditd to apply new configuration
+  service:
+    name: auditd
+    state: restarted
+    enabled: true

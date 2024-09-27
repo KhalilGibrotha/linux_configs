@@ -1,0 +1,89 @@
+---
+# Source of this snippet: CIS Red Hat Enterprise Linux 8 Benchmark v1.0.0 - 1.1.3
+# https://complianceascode.github.io/content-pages/tables/table-rhel8-cces.html
+
+# Configure Periodic Execution of AIDE
+# Identifier: (ssg:rhel8|cis_server_l1|xccdf_org.ssgproject.content_rule_aide_periodic_cron_checking,fix)
+# Version: undefined
+# platform = multi_platform_all
+# reboot = false
+# strategy = restrict
+# complexity = low
+# disruption = low
+- name: Configure Periodic Execution of AIDE
+  become: true
+  tags: 
+    - CCE-80676-0
+    - CJIS-5.10.1.3
+    - NIST-800-53-CM-6(a)
+    - NIST-800-53-SI-7
+    - NIST-800-53-SI-7(1)
+    - PCI-DSS-Req-11.5
+    - PCI-DSSv4-11.5.2
+    - aide_periodic_cron_checking
+    - low_complexity
+    - low_disruption
+    - medium_severity
+    - no_reboot_needed
+    - restrict_strategy
+  vars:
+    insights_signature_exclude: /hosts,/vars/insights_signature
+    insights_signature: !!binary |
+      TFMwdExTMUNSVWRKVGlCUVIxQWdVMGxIVGtGVVZWSkZMUzB0TFMwS1ZtVnljMmx2YmpvZ1IyNTFV
+      RWNnZGpFS0NtbFJTV05DUVVGQ1EwRkJSMEpSU20xNGNHSm9RVUZ2U2tWTmRuYzFPRVFyYWpWd1Rq
+      TXhORkF2TVc5MmFpc3JLMlpXVTI5RmMxbEtkRXBhVERkNUsyVUtaVEJ2V1RaeU1UbGlWSGR6VEZG
+      Vk5EWkJRVXBJTTBwWWRrRm9SR3RZV2t0UVNHTnRSMHhTYVdoNFNGQmxSMXBZYzBKVlFtNWlVVGRZ
+      VG5OcmFFcEZkZ3BsYUc1cWRGcGhia05STm1OQlFsWnRhbFZFVm5oT1FYRnViSHBFZWtoUlFreGli
+      R1JyTm5CNWJ5dFFZM1JGSzJsalJEZGFZelppYmt0MVIyOWtTbEYzQ25CbGRrbGliSGwzVW1wbWFs
+      TkRNVXRHVEZKS2IzTmxTREZZYjNCVE4xTldURWR3VFdaSE5UVnZSMUphY0c1dVdHVlhUVTFyYkZN
+      cmIxRnpTbFJWUjJJS2JWcFhjVVIzY0VzMGVVdEpaMUpYU0hJeWNFbEdUek00T0dFelEyOWliVFF6
+      Vm5VdllscFpVMWcyVWl0aVQwaExSVmgxY0ZNMmFVaHFLelZPTTBaRmRRcG1hRzVQV21KaFlWVTNa
+      RkZ1YmtoQmQxVmpNVkpxTUdwSVdGcGlTVFF4ZEhaUlVYRm1ZakJqY0VsVWRrNVlXbTV1UVRRMk5s
+      UjVUMHRDWjJSTVJXTkhDazB5Tkc5NlpXaEtlWEJMZGxScGFEaFpheTlMVGpOd1NsRlVSVUpYUld4
+      SmFtZFJVRVY1ZFM4MlNXZGtXV3cxUzBOaGVrc3JORE5FY0cxellqVjJTM2tLUWs5VlQyRkhVRXB4
+      YVhGck4zRm9hSGw1UlRWeEwzcHplWGRNVTFaNlRHSlZNWEZKWm5oUlRXWlZRbkl4U1hWSFJrZDVZ
+      MFJrV1UxWGRYSlJTSG8wUlFwREsxSjNlbU5KVW1OMVNYQm1iR1V4WlV0U1JYVlRjV3M0ZGxaVFVE
+      ZFVRelJhUzJOQmNUQXpZbmwyYlhCcVppODRkRE5YTWpWRWVURlVURXByZG05ckNreG9iMkZyU21j
+      d04zZG5hRUp3Tlc1eVJXeHJRVXBxWTNwWVV6WTBMMHRZYUZVck5XZHlUWGRUYkc0eVowTk9TR1ZF
+      TVhwNFMxUmlRVTV5Tmtrd2NFc0tUM00wTUZONlRVcDJNREZWYlhoNWRWSXlhVzV4VW5WQ1ZrWnNV
+      RFprVjFoc1pFUTNTV2hsVW5oR1QwdEZXbVl4VkM5SFJVUXZVekJxWlhaTU1HdDFWQXBpYWpWSU9Y
+      cFhVa1ZGZFZoWFlXazVUM0EyVGdvOWJuUlRZUW90TFMwdExVVk9SQ0JRUjFBZ1UwbEhUa0ZVVlZK
+      RkxTMHRMUzBL
+  tasks:
+    - name: Ensure AIDE is installed
+      package:
+        name: '{{ item }}'
+        state: present
+      with_items:
+        - aide
+      when: ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+
+    - name: Set cron package name - RedHat
+      set_fact:
+        cron_pkg_name: cronie
+      when:
+        - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+        - ansible_os_family == "RedHat" or ansible_os_family == "Suse"
+
+    - name: Set cron package name - Debian
+      set_fact:
+        cron_pkg_name: cron
+      when:
+        - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+        - ansible_os_family == "Debian"
+
+    - name: Install cron
+      package:
+        name: '{{ cron_pkg_name }}'
+        state: present
+      when: ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+
+    - name: Configure Periodic Execution of AIDE
+      cron:
+        name: run AIDE check
+        minute: 5
+        hour: 4
+        weekday: 0
+        user: root
+        job: /usr/sbin/aide --check
+      when: ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]

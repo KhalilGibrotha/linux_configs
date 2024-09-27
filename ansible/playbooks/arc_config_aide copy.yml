@@ -1,0 +1,6 @@
+---
+- name: Configure AIDE on all hosts
+  hosts: all
+  become: true
+  roles:
+    - ../roles/aide

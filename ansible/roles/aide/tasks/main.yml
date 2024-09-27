@@ -1,0 +1,10 @@
+---
+# main.yml
+- name: Install aide
+  ansible.builtin.import_tasks: ./install_aide.yml
+
+- name: Configure aide
+  ansible.builtin.import_tasks: ./configure_aide.yml
+
+- name: Schedule aide
+  ansible.builtin.import_tasks: ./schedule_aide.yml

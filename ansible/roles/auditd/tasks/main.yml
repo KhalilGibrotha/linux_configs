@@ -1,0 +1,7 @@
+---
+# main.yml
+- name: Install auditd
+  ansible.builtin.import_tasks: ./install_auditd.yml
+
+- name: Configure auditd
+  ansible.builtin.import_tasks: ./configure_auditd.yml

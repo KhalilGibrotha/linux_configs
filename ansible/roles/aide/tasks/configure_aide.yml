@@ -1,0 +1,88 @@
+---
+# Source: CIS Red Hat Enterprise Linux 8 Benchmark v1.0.0 - 1.1.2
+
+# Configure AIDE to Verify the Audit Tools
+# Identifier: (ssg:rhel8|cis_server_l1|xccdf_org.ssgproject.content_rule_aide_check_audit_tools,fix)
+# Version: undefined
+# platform = multi_platform_sle,multi_platform_ol,multi_platform_rhel,multi_platform_ubuntu
+# reboot = false
+# strategy = restrict
+# complexity = low
+# disruption = low
+- name: Configure AIDE to Verify the Audit Tools
+  become: true
+  tags:
+    - CCE-85964-5
+    - DISA-STIG-RHEL-08-030650
+    - NIST-800-53-AU-9(3)
+    - NIST-800-53-AU-9(3).1
+    - aide_check_audit_tools
+    - low_complexity
+    - low_disruption
+    - medium_severity
+    - no_reboot_needed
+    - restrict_strategy
+  vars:
+    insights_signature_exclude: /hosts,/vars/insights_signature
+    insights_signature: !!binary |
+      TFMwdExTMUNSVWRKVGlCUVIxQWdVMGxIVGtGVVZWSkZMUzB0TFMwS1ZtVnljMmx2YmpvZ1IyNTFV
+      RWNnZGpFS0NtbFJTV05DUVVGQ1EwRkJSMEpSU20xNGNHSjZRVUZ2U2tWTmRuYzFPRVFyYWpWd1Rt
+      cEVSVkF2TUVaQlRTdFplR28xY1hkSmIyNVdUbUY2TjFwak1HRUtVMWt4UVROSWFUSlZPWE5UY0Rs
+      SlZEaFhTREZFVmpoMlozRmhUMWcwWmpKeVdXMDJXV0ZOVlhVelZHNVZkRzkyVkUxYVUwZHFhaTk1
+      Yms0M1YwMU1RUXBaZG0wdmRqYzNTR3BXTWxaU1R6UkJVRGxZVlVwNWRDOWFjekpIYWpRMFdUUnBi
+      WHB2YW0wNWJsQmpXa3hCUzJsc0wzWlFOMmxHUkdOR2FWWkxORzE2Q2tVdk5GZHhRM0p2VDAxRlNq
+      VmpSM1pKY2xkWGRDOXBNRTFxY25nd05VcG9WRXBvU0hObGVXZE5lblJ1UVM5c1UyMUdPSFZuVVRs
+      UWFWTnNkblExWlM4S2QzRTFUMUZ6VkRsMmIyOTZjRXBrTkVVeFNuZHhOa050SzJVdmNVZGhTMU0z
+      WVhGM2RqWktPSG93ZVRKNk1UTkNTSFZNUTNWMmNESjRTMVJsYTJKNmVncFNXbXB5YzNaVWJGcE1V
+      bnB3YUdoc1RFaGhhR3N5YUdSTVVWSnllSFpXVUZWRFZWTkJhVzF3VUVwbVdrVnpjRTFXWmpWd09E
+      aERTRVo0V0dSSFpVUk1DalJ5YkdJMFQzVXZiVmgyTmxkcFMwRndabmhaWlRaT1RYY3Zja0YwVEZV
+      NWFtUXlZVUp3U2pOMk1FMDJXVEZMYWpKamRsRXpiWFZTZUdSd2EzUkJPV1lLU0dsSGVubGtRVk5p
+      WTNOV1VqSlRRVWxtYjJoMFVUWlNjREJUVm5GVlNXRkNkbXA2TTNoYVR6WTBVV2hJUVdadE9EVnNU
+      MVJQZW1veE5rOHZZbFp4TVFwcFlrdzFhRkpDY25oWlpYRTJlUzlOTTNGYVltdExjMmRyU0ZONU5W
+      TjFRbU5YUWxSRWJtMDBNRTVSY2t0dVRYaFJNbTUxWVhWM1EyMUhTV1JWT0U5TENuVm1PSHBSZEU5
+      RU1WaEhWekJoTmxabk1WZENSbkpRVGtkRlFsTjJSVzByV0ZkcVdWRnBiMGN3V0VOUGRFVjFRakky
+      ZUN0dFZtNTVlV05QTkV4cFZtb0tWems0WlVwTVpVTTFXVEEwY3pKdGFIa3djMlU0YkhkWmQwbGhP
+      R2xsZGpNcmNHRTJWVXd2UmxwcFEwRndUbmxvS3pOTGRFRTFUSGhUUmpodFNqRjJhQXBQY1ZCQlNr
+      OU9hRXhDTHpoTE5TOVBLMWxhZWdvOU9IVkdXUW90TFMwdExVVk9SQ0JRUjFBZ1UwbEhUa0ZVVlZK
+      RkxTMHRMUzBL
+  tasks:
+
+- name: Configure AIDE to Verify the Audit Tools - Gather List of Packages
+  ansible.builtin.package_facts:
+    manager: auto
+    when: ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+
+- name: Ensure aide is installed
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - aide
+  when: ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+
+- name: Set audit_tools fact
+  set_fact:
+    audit_tools:
+      - /usr/sbin/auditctl
+      - /usr/sbin/auditd
+      - /usr/sbin/augenrules
+      - /usr/sbin/aureport
+      - /usr/sbin/ausearch
+      - /usr/sbin/autrace
+      - /usr/sbin/rsyslogd
+  when: ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+
+- name: Ensure existing AIDE configuration for audit tools are correct
+  lineinfile:
+    path: /etc/aide.conf
+    regexp: ^{{ item }}\s
+    line: '{{ item }} p+i+n+u+g+s+b+acl+xattrs+sha512'
+    with_items: '{{ audit_tools }}'
+    when: ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+
+- name: Configure AIDE to properly protect audit tools
+  lineinfile:
+    path: /etc/aide.conf
+    line: '{{ item }} p+i+n+u+g+s+b+acl+xattrs+sha512'
+  with_items: '{{ audit_tools }}'
+  when: ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
